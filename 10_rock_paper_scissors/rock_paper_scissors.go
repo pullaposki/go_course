@@ -7,6 +7,7 @@ import (
 )
 
 func opponent_worker(messages chan int) {
+
 	// Randomize the choice between rock, paper, and scissors
 	random := rand.New(rand.NewSource(time.Now().UnixNano()))
 	choice := random.Intn(3)
@@ -18,7 +19,6 @@ func opponent_worker(messages chan int) {
 func main() {
 	// create the channels
 	messages := make(chan int)
-	done := make(chan bool)
 
 	winPoints := 3
 
@@ -30,11 +30,10 @@ func main() {
 	// loop until either the player or the opponent reaches the winPoints
 	for playerPoints < winPoints && opponentPoints < winPoints {
 		go func() {
-			var _ chan bool = done
 			opponent_worker(messages)
 		}()
 
-		// get the opponent's choice from the opponent worker
+		// the main thread will wait until it receives a value from the opponent worker
 		opponentChoice := <-messages
 
 		// get the user's choice
